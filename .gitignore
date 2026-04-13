@@ -208,3 +208,6 @@ __marimo__/
 
 .idea/
 CLAUDE.md
+
+# Git worktrees
+.worktrees/
