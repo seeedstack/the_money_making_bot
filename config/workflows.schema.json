@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "workflows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "platform", "trigger", "source_id", "steps"],
+        "properties": {
+          "name": { "type": "string" },
+          "platform": { "enum": ["instagram", "twitter", "telegram"] },
+          "trigger": { "type": "string" },
+          "source_id": { "type": "string" },
+          "priority": { "type": "integer", "minimum": 1 },
+          "match_mode": { "enum": ["exact", "contains"] },
+          "link": { "type": "string" },
+          "steps": { "type": "array" }
+        }
+      }
+    }
+  }
+}

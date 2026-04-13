@@ -1,0 +1,13 @@
+workflows:
+  - name: "Example Workflow"
+    platform: instagram
+    trigger: "hello"
+    source_id: "https://instagram.com/p/ABC123"
+    priority: 1
+    match_mode: contains
+    link: "https://example.com"
+    steps:
+      - type: check_follow
+      - type: send_message
+        message: "Hey {username}! Thanks for reaching out."
+        send_if: always
