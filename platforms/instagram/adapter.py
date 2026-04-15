@@ -18,16 +18,16 @@ class InstagramAdapter(BasePlatformAdapter):
         self.follow_checker = FollowChecker(self.client)
 
     def read_triggers(self, source_id: str) -> list[TriggerEvent]:
-        """Fetch comments from post. Stub: return []"""
-        return []
+        """Fetch comments from post."""
+        return self.comment_reader.fetch(source_id)
 
     def send_message(self, recipient_id: str, text: str) -> bool:
-        """Send DM to user. Stub: return True"""
-        return True
+        """Send DM to user."""
+        return self.dm_sender.send(recipient_id, text)
 
     def check_follow(self, username: str) -> FollowStatus:
-        """Check if user follows. Stub: return NOT_FOLLOWING"""
-        return FollowStatus.NOT_FOLLOWING
+        """Check if user follows."""
+        return self.follow_checker.is_following(username)
 
     def supports_follow_gate(self) -> bool:
         """Instagram supports follow gate. Stub: return True"""

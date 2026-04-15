@@ -15,3 +15,7 @@ class SettingsRepository:
     def get_all(self, platform: str) -> dict:
         """Get all settings for platform. Stub: return {}"""
         return {}
+
+
+# Global instance (stub for now)
+settings_repo = SettingsRepository(db_engine=None)
