@@ -52,7 +52,7 @@ Build Instagram adapter as complete skeleton. All files created. All imports wir
 ## File Structure
 
 ```
-the-bot/
+theBot/
 ├── config/
 │   ├── settings.py              # Load .env → typed Settings
 │   ├── workflows.yaml           # Workflow definitions (stub)
@@ -375,7 +375,7 @@ INSTAGRAM_DAILY_DM_CAP=50
 INSTAGRAM_DM_DELAY_MIN=1
 INSTAGRAM_DM_DELAY_MAX=3
 
-DATABASE_URL=sqlite:///data/the-bot.db
+DATABASE_URL=sqlite:///data/theBot.db
 ```
 
 (Instagram username/password NOT in env — stored encrypted in DB)

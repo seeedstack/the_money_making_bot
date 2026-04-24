@@ -91,7 +91,7 @@ INSTAGRAM_DM_DELAY_MIN=1
 INSTAGRAM_DM_DELAY_MAX=3
 
 # Database
-DATABASE_URL=sqlite:///data/the-bot.db
+DATABASE_URL=sqlite:///data/theBot.db
 
 # Encryption (for storing creds)
 ENCRYPTION_KEY=your_fernet_key_here_32_chars_min
@@ -208,7 +208,7 @@ class Settings:
     instagram_dm_delay_max: int = int(os.getenv("INSTAGRAM_DM_DELAY_MAX", "3"))
     
     # Database
-    database_url: str = os.getenv("DATABASE_URL", "sqlite:///data/the-bot.db")
+    database_url: str = os.getenv("DATABASE_URL", "sqlite:///data/theBot.db")
     
     # Encryption
     encryption_key: str = os.getenv("ENCRYPTION_KEY", "default_key_not_secure")
@@ -1092,7 +1092,7 @@ class Database:
 
     def __init__(self, database_url: str = None):
         if database_url is None:
-            database_url = os.getenv("DATABASE_URL", "sqlite:///data/the-bot.db")
+            database_url = os.getenv("DATABASE_URL", "sqlite:///data/theBot.db")
 
         # Create data directory if needed
         if "sqlite:///" in database_url and ":memory:" not in database_url:

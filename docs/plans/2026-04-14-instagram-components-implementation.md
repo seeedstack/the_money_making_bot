@@ -175,7 +175,7 @@ def test_user_info_returns_dict(mock_settings_repo):
 - [ ] **Step 2: Run tests to verify they fail**
 
 ```bash
-cd /Users/saran/Work/the-bot
+cd /Users/saran/Work/theBot
 pytest tests/unit/platforms/instagram/test_client.py -v
 ```
 
