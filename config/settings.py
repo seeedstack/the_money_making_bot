@@ -21,7 +21,7 @@ class Settings:
     instagram_dm_delay_max: int = int(os.getenv("INSTAGRAM_DM_DELAY_MAX", "3"))
 
     # Database
-    database_url: str = os.getenv("DATABASE_URL", "sqlite:///data/the-bot.db")
+    database_url: str = os.getenv("DATABASE_URL", "sqlite:///data/theBot.db")
 
     # Encryption
     encryption_key: str = os.getenv("ENCRYPTION_KEY", "default_key_not_secure")

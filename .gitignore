@@ -211,3 +211,4 @@ CLAUDE.md
 
 # Git worktrees
 .worktrees/
+data/
