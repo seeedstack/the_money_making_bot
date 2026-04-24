@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bot Test Dashboard</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        h1 { color: #333; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 4px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; font-weight: bold; }
+        .ok { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f8f8; padding: 10px; overflow-x: auto; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 The Bot - Test Dashboard</h1>
+
+        <div class="section">
+            <h2>API Health</h2>
+            <button onclick="checkAPI()">Check API Status</button>
+            <div id="api-status"></div>
+        </div>
+
+        <div class="section">
+            <h2>Platforms</h2>
+            <button onclick="getPlatforms()">Get Platforms</button>
+            <pre id="platforms-output"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Workflows</h2>
+            <button onclick="getWorkflows()">Get Workflows</button>
+            <pre id="workflows-output"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Stats</h2>
+            <button onclick="getStats()">Get Stats</button>
+            <pre id="stats-output"></pre>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+
+        async function checkAPI() {
+            try {
+                const res = await fetch(API_BASE + '/platforms');
+                if (res.ok) {
+                    document.getElementById('api-status').innerHTML = '<div class="status ok">✓ API is UP</div>';
+                } else {
+                    document.getElementById('api-status').innerHTML = '<div class="status error">✗ API returned ' + res.status + '</div>';
+                }
+            } catch (e) {
+                document.getElementById('api-status').innerHTML = '<div class="status error">✗ API unreachable: ' + e.message + '</div>';
+            }
+        }
+
+        async function getPlatforms() {
+            try {
+                const res = await fetch(API_BASE + '/platforms');
+                const data = await res.json();
+                document.getElementById('platforms-output').textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                document.getElementById('platforms-output').textContent = 'Error: ' + e.message;
+            }
+        }
+
+        async function getWorkflows() {
+            try {
+                const res = await fetch(API_BASE + '/workflows?platform=instagram');
+                const data = await res.json();
+                document.getElementById('workflows-output').textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                document.getElementById('workflows-output').textContent = 'Error: ' + e.message;
+            }
+        }
+
+        async function getStats() {
+            try {
+                const res = await fetch(API_BASE + '/stats?platform=all');
+                const data = await res.json();
+                document.getElementById('stats-output').textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                document.getElementById('stats-output').textContent = 'Error: ' + e.message;
+            }
+        }
+
+        // Auto-check API on load
+        window.onload = checkAPI;
+    </script>
+</body>
+</html>

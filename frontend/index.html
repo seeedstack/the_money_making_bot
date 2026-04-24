@@ -7,7 +7,134 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <div id="root"></div>
-    <script src="/app.jsx" type="module"></script>
+    <div class="container">
+        <header class="header">
+            <h1>🤖 The Bot</h1>
+            <div class="header-controls">
+                <select id="platformSelect">
+                    <option value="instagram">📷 Instagram</option>
+                    <option value="twitter">𝕏 Twitter</option>
+                    <option value="telegram">📱 Telegram</option>
+                </select>
+                <button onclick="pauseBot()">⏸ Pause</button>
+                <button onclick="resumeBot()">▶️ Resume</button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="home">Home</button>
+            <button class="tab-btn" data-tab="platforms">Platforms</button>
+            <button class="tab-btn" data-tab="workflows">Workflows</button>
+            <button class="tab-btn" data-tab="sessions">Sessions</button>
+            <button class="tab-btn" data-tab="checks">Pending Checks</button>
+        </nav>
+
+        <main class="content">
+            <!-- Home Tab -->
+            <div id="home" class="tab-content active">
+                <h2>Dashboard</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Triggers Matched</h3>
+                        <p class="stat-number" id="triggersCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Messages Sent</h3>
+                        <p class="stat-number" id="messagesCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Sessions</h3>
+                        <p class="stat-number" id="sessionsCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Checks</h3>
+                        <p class="stat-number" id="checksCount">0</p>
+                    </div>
+                </div>
+
+                <h3>Recent Sessions</h3>
+                <div id="recentSessions" class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Workflow</th>
+                                <th>State</th>
+                                <th>Started</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentSessionsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Platforms Tab -->
+            <div id="platforms" class="tab-content">
+                <h2>Platforms</h2>
+                <div id="platformsList" class="platforms-grid"></div>
+            </div>
+
+            <!-- Workflows Tab -->
+            <div id="workflows" class="tab-content">
+                <h2>Workflows</h2>
+                <button onclick="showCreateWorkflow()" class="btn-primary">+ New Workflow</button>
+                <div id="workflowsList" class="workflows-grid"></div>
+            </div>
+
+            <!-- Sessions Tab -->
+            <div id="sessions" class="tab-content">
+                <h2>Message Sessions</h2>
+                <div class="filter-controls">
+                    <select id="stateFilter">
+                        <option value="">All States</option>
+                        <option value="STEP_RUNNING">Running</option>
+                        <option value="AWAITING_FOLLOW">Awaiting Follow</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="FAILED">Failed</option>
+                    </select>
+                    <button onclick="loadSessions()">Refresh</button>
+                </div>
+                <div id="sessionsList" class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Workflow</th>
+                                <th>State</th>
+                                <th>Step</th>
+                                <th>Follow Status</th>
+                                <th>Started</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sessionsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pending Checks Tab -->
+            <div id="checks" class="tab-content">
+                <h2>Pending Follow Checks</h2>
+                <div id="checksList" class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Session</th>
+                                <th>Due At</th>
+                                <th>Attempts</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="checksBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/api.js"></script>
+    <script src="/app.js"></script>
 </body>
 </html>
