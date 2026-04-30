@@ -4,9 +4,9 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional
 
-from platforms.twitter.client import TwitterClient
-from core.models.trigger import TriggerEvent
-from core.models.platform import Platform
+from app.adapters.twitter.client import TwitterClient
+from app.core.models.trigger import TriggerEvent
+from app.core.models.platform import Platform
 
 logger = logging.getLogger(__name__)
 

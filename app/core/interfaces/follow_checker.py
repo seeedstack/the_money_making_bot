@@ -1,5 +1,5 @@
 from typing import Protocol
-from core.models import FollowStatus
+from app.core.models import FollowStatus
 
 class FollowChecker(Protocol):
     """Check follow status on platform."""

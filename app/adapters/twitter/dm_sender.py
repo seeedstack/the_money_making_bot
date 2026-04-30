@@ -1,6 +1,6 @@
 # platforms/twitter/dm_sender.py
 
-from platforms.twitter.client import TwitterClient
+from app.adapters.twitter.client import TwitterClient
 
 
 class DMSender:

@@ -2,8 +2,8 @@
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from platforms.instagram.client import InstagramClient
-from platforms.instagram.errors import LoginError, APIError, NetworkError
+from app.adapters.instagram.client import InstagramClient
+from app.adapters.instagram.errors import LoginError, APIError, NetworkError
 
 
 @pytest.fixture

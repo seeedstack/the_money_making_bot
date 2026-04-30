@@ -3,8 +3,8 @@
 import logging
 import re
 from instagrapi import Client
-from platforms.settings_compat import settings_repo
-from platforms.instagram.errors import LoginError, APIError, NetworkError
+from app.adapters.settings_compat import settings_repo
+from app.adapters.instagram.errors import LoginError, APIError, NetworkError
 
 logger = logging.getLogger(__name__)
 

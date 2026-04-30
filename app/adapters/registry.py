@@ -1,4 +1,4 @@
-from core.models import Platform
+from app.core.models import Platform
 
 class PlatformRegistry:
     """Map Platform enum → adapter instance."""

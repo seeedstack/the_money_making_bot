@@ -1,4 +1,4 @@
-from core.models import MessageSession, SessionState
+from app.core.models import MessageSession, SessionState
 
 class StepExecutor:
     """Execute one workflow step, return next state."""

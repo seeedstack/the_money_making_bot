@@ -3,9 +3,9 @@
 import pytest
 from datetime import datetime
 from unittest.mock import Mock
-from core.models import TriggerEvent, Platform
-from platforms.instagram.comment_reader import CommentReader
-from platforms.instagram.errors import APIError
+from app.core.models import TriggerEvent, Platform
+from app.adapters.instagram.comment_reader import CommentReader
+from app.adapters.instagram.errors import APIError
 
 
 def test_fetch_returns_trigger_events():

@@ -1,11 +1,11 @@
 # platforms/twitter/adapter.py
 
-from core.models import Platform, FollowStatus, TriggerEvent
-from platforms.base import BasePlatformAdapter
-from platforms.twitter.client import TwitterClient
-from platforms.twitter.reply_reader import ReplyReader
-from platforms.twitter.dm_sender import DMSender
-from platforms.twitter.follow_checker import FollowChecker
+from app.core.models import Platform, FollowStatus, TriggerEvent
+from app.adapters.base import BasePlatformAdapter
+from app.adapters.twitter.client import TwitterClient
+from app.adapters.twitter.reply_reader import ReplyReader
+from app.adapters.twitter.dm_sender import DMSender
+from app.adapters.twitter.follow_checker import FollowChecker
 
 
 class TwitterAdapter(BasePlatformAdapter):

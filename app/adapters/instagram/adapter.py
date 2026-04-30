@@ -1,5 +1,5 @@
-from core.models import Platform, FollowStatus, TriggerEvent
-from platforms.base import BasePlatformAdapter
+from app.core.models import Platform, FollowStatus, TriggerEvent
+from app.adapters.base import BasePlatformAdapter
 from .client import InstagramClient
 from .comment_reader import CommentReader
 from .dm_sender import DMSender

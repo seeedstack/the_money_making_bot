@@ -2,8 +2,8 @@
 
 import logging
 import tweepy
-from platforms.settings_compat import settings_repo
-from platforms.twitter.errors import LoginError, APIError, NetworkError
+from app.adapters.settings_compat import settings_repo
+from app.adapters.twitter.errors import LoginError, APIError, NetworkError
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
 from typing import Protocol
-from core.models import Platform, TriggerEvent, FollowStatus
+from app.core.models import Platform, TriggerEvent, FollowStatus
 
 class PlatformAdapter(Protocol):
     """All platform adapters must implement these 4 methods."""

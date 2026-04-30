@@ -2,8 +2,8 @@
 
 import pytest
 from unittest.mock import Mock
-from core.models import FollowStatus
-from platforms.twitter.follow_checker import FollowChecker
+from app.core.models import FollowStatus
+from app.adapters.twitter.follow_checker import FollowChecker
 
 
 def test_is_following_returns_following():

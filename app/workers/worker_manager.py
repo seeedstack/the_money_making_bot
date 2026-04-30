@@ -1,5 +1,5 @@
 import logging
-from core.models import Platform
+from app.core.models import Platform
 from config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -13,9 +13,9 @@ class WorkerManager:
     def start_all(self):
         """Start workers for all enabled platforms."""
         if settings.instagram_enabled:
-            from workers.per_platform.trigger_monitor import TriggerMonitorWorker
-            from workers.per_platform.message_engine import MessageEngineWorker
-            from workers.per_platform.follow_recheck import FollowRecheckWorker
+            from app.workers.per_platform.trigger_monitor import TriggerMonitorWorker
+            from app.workers.per_platform.message_engine import MessageEngineWorker
+            from app.workers.per_platform.follow_recheck import FollowRecheckWorker
 
             trigger = TriggerMonitorWorker()
             message = MessageEngineWorker()

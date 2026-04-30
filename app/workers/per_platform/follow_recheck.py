@@ -1,6 +1,6 @@
 import logging
-from core.models import Platform
-from workers.base_worker import BaseWorker
+from app.core.models import Platform
+from app.workers.base_worker import BaseWorker
 
 logger = logging.getLogger(__name__)
 

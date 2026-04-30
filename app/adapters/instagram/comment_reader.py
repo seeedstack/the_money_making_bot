@@ -1,4 +1,4 @@
-from core.models import TriggerEvent, Platform
+from app.core.models import TriggerEvent, Platform
 from .client import InstagramClient
 
 

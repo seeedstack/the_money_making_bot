@@ -1,5 +1,5 @@
 from abc import ABC
-from core.models import Platform
+from app.core.models import Platform
 
 class BasePlatformAdapter(ABC):
     """Base adapter. All platforms inherit from this."""

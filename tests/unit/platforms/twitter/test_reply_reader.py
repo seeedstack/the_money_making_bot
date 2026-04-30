@@ -3,9 +3,9 @@
 import pytest
 from datetime import datetime
 from unittest.mock import Mock, patch, MagicMock
-from platforms.twitter.reply_reader import ReplyReader
-from core.models.trigger import TriggerEvent
-from core.models.platform import Platform
+from app.adapters.twitter.reply_reader import ReplyReader
+from app.core.models.trigger import TriggerEvent
+from app.core.models.platform import Platform
 
 
 @pytest.fixture

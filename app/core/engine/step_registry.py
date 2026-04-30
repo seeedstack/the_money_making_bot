@@ -1,4 +1,4 @@
-from core.models import StepType
+from app.core.models import StepType
 
 class StepRegistry:
     """Map StepType → handler class."""

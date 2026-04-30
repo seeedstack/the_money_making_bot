@@ -2,8 +2,8 @@
 
 import pytest
 from unittest.mock import Mock
-from platforms.twitter.dm_sender import DMSender
-from platforms.twitter.errors import APIError, NetworkError
+from app.adapters.twitter.dm_sender import DMSender
+from app.adapters.twitter.errors import APIError, NetworkError
 
 
 def test_send_returns_true_on_success():

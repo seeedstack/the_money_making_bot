@@ -2,7 +2,7 @@ import threading
 import time
 import logging
 from abc import ABC, abstractmethod
-from core.models import Platform
+from app.core.models import Platform
 
 logger = logging.getLogger(__name__)
 

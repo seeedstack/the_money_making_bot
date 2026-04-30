@@ -1,6 +1,6 @@
 from app import create_app
 from app.extensions import socketio
-from workers.worker_manager import WorkerManager
+from app.workers.worker_manager import WorkerManager
 from config.settings import settings
 
 app = create_app()

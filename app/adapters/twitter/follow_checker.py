@@ -1,7 +1,7 @@
 # platforms/twitter/follow_checker.py
 
-from core.models import FollowStatus
-from platforms.twitter.client import TwitterClient
+from app.core.models import FollowStatus
+from app.adapters.twitter.client import TwitterClient
 
 
 class FollowChecker:

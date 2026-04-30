@@ -2,8 +2,8 @@
 
 import pytest
 from unittest.mock import Mock
-from platforms.instagram.dm_sender import DMSender
-from platforms.instagram.errors import APIError, NetworkError
+from app.adapters.instagram.dm_sender import DMSender
+from app.adapters.instagram.errors import APIError, NetworkError
 
 
 def test_send_returns_true_on_success():

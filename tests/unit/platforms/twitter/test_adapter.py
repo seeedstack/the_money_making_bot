@@ -3,8 +3,8 @@
 import pytest
 from datetime import datetime
 from unittest.mock import Mock, MagicMock, patch
-from core.models import Platform, FollowStatus, TriggerEvent
-from platforms.twitter.adapter import TwitterAdapter
+from app.core.models import Platform, FollowStatus, TriggerEvent
+from app.adapters.twitter.adapter import TwitterAdapter
 
 
 @pytest.fixture
@@ -85,7 +85,7 @@ class TestTwitterAdapterIntegration:
 
     def test_send_message_propagates_dm_sender_exceptions(self, adapter_with_mock_client):
         """send_message() propagates exceptions from dm_sender."""
-        from platforms.twitter.errors import APIError
+        from app.adapters.twitter.errors import APIError
         adapter_with_mock_client.client.send_dm.side_effect = APIError("Send failed")
 
         with pytest.raises(APIError):
