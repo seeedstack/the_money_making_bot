@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Bot</title>
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
     <div class="container">
@@ -17,7 +18,12 @@
                     <option value="telegram">📱 Telegram</option>
                 </select>
                 <button onclick="pauseBot()">⏸ Pause</button>
-                <button onclick="resumeBot()">▶️ Resume</button>
+                <button onclick="resumeBot()">▶ Resume</button>
+                <button id="darkToggle" onclick="toggleDarkMode()" class="btn-icon" title="Toggle dark mode">🌙</button>
+                <a href="/auth/change-password" class="btn-icon" title="Change password">🔑</a>
+                <form method="POST" action="/auth/logout" style="display:inline;">
+                    <button type="submit" class="btn-logout">Sign Out</button>
+                </form>
             </div>
         </header>
 
@@ -26,7 +32,7 @@
             <button class="tab-btn" data-tab="platforms">Platforms</button>
             <button class="tab-btn" data-tab="workflows">Workflows</button>
             <button class="tab-btn" data-tab="sessions">Sessions</button>
-            <button class="tab-btn" data-tab="checks">Pending Checks</button>
+            <button class="tab-btn" data-tab="checks" id="checksTabBtn" style="display:none;">Pending Checks</button>
         </nav>
 
         <main class="content">
@@ -36,24 +42,28 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>Triggers Matched</h3>
-                        <p class="stat-number" id="triggersCount">0</p>
+                        <p class="stat-number" id="triggersCount">—</p>
                     </div>
                     <div class="stat-card">
                         <h3>Messages Sent</h3>
-                        <p class="stat-number" id="messagesCount">0</p>
+                        <p class="stat-number" id="messagesCount">—</p>
                     </div>
                     <div class="stat-card">
                         <h3>Active Sessions</h3>
-                        <p class="stat-number" id="sessionsCount">0</p>
+                        <p class="stat-number" id="sessionsCount">—</p>
                     </div>
                     <div class="stat-card">
                         <h3>Pending Checks</h3>
-                        <p class="stat-number" id="checksCount">0</p>
+                        <p class="stat-number" id="checksCount">—</p>
                     </div>
                 </div>
 
-                <h3>Recent Sessions</h3>
+                <h3>Live Feed</h3>
+                <div id="liveFeed" class="live-feed"></div>
+
+                <h3 style="margin-top:20px;">Recent Sessions</h3>
                 <div id="recentSessions" class="table-container">
+                    <div class="loading-row" id="recentSessionsLoading">Loading...</div>
                     <table>
                         <thead>
                             <tr>
@@ -71,13 +81,20 @@
             <!-- Platforms Tab -->
             <div id="platforms" class="tab-content">
                 <h2>Platforms</h2>
+                <div class="loading-row" id="platformsLoading">Loading...</div>
                 <div id="platformsList" class="platforms-grid"></div>
             </div>
 
             <!-- Workflows Tab -->
             <div id="workflows" class="tab-content">
                 <h2>Workflows</h2>
-                <button onclick="showCreateWorkflow()" class="btn-primary">+ New Workflow</button>
+                <div class="workflows-toolbar">
+                    <button onclick="showCreateWorkflow()" class="btn-primary">+ New Workflow</button>
+                    <input type="search" id="workflowSearch" placeholder="Search by name or trigger…"
+                        oninput="renderWorkflows(allWorkflows, this.value)"
+                        class="search-input">
+                </div>
+                <div class="loading-row" id="workflowsLoading">Loading...</div>
                 <div id="workflowsList" class="workflows-grid"></div>
             </div>
 
@@ -91,14 +108,16 @@
                         <option value="AWAITING_FOLLOW">Awaiting Follow</option>
                         <option value="COMPLETED">Completed</option>
                         <option value="FAILED">Failed</option>
+                        <option value="TIMED_OUT">Timed Out</option>
                     </select>
                     <button onclick="loadSessions()">Refresh</button>
                 </div>
+                <div class="loading-row" id="sessionsLoading">Loading...</div>
+                <div id="sessionsPagination" class="pagination-bar"></div>
                 <div id="sessionsList" class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Username</th>
                                 <th>Workflow</th>
                                 <th>State</th>
@@ -115,11 +134,11 @@
             <!-- Pending Checks Tab -->
             <div id="checks" class="tab-content">
                 <h2>Pending Follow Checks</h2>
+                <div class="loading-row" id="checksLoading">Loading...</div>
                 <div id="checksList" class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Username</th>
                                 <th>Session</th>
                                 <th>Due At</th>
@@ -134,6 +153,71 @@
         </main>
     </div>
 
+    <!-- Workflow Modal -->
+    <div id="workflowModal" class="modal" style="display:none;">
+        <div class="modal-overlay" onclick="closeWorkflowModal()"></div>
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="workflowModalTitle">Create Workflow</h3>
+                <button class="modal-close" onclick="closeWorkflowModal()">&times;</button>
+            </div>
+            <form id="workflowForm" onsubmit="saveWorkflow(event)">
+                <div class="form-row">
+                    <label>Name *</label>
+                    <input type="text" id="wfName" required placeholder="e.g. Detox Guide">
+                </div>
+                <div class="form-row">
+                    <label>Trigger Keyword *</label>
+                    <input type="text" id="wfTrigger" required placeholder="e.g. detox">
+                </div>
+                <div class="form-row">
+                    <label>Source ID *</label>
+                    <input type="text" id="wfSourceId" required placeholder="Post URL or ID">
+                </div>
+                <div class="form-row">
+                    <label>Link (optional)</label>
+                    <input type="text" id="wfLink" placeholder="https://...">
+                </div>
+                <div class="form-row two-col">
+                    <div>
+                        <label>Match Mode</label>
+                        <select id="wfMatchMode">
+                            <option value="contains">Contains</option>
+                            <option value="exact">Exact</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Priority</label>
+                        <input type="number" id="wfPriority" value="1" min="1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Steps</label>
+                    <div id="wfSteps"></div>
+                    <button type="button" class="btn-add-step" onclick="addStep()">+ Add Step</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeWorkflowModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Session Detail Modal -->
+    <div id="sessionModal" class="modal" style="display:none;">
+        <div class="modal-overlay" onclick="closeSessionModal()"></div>
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Session Detail</h3>
+                <button class="modal-close" onclick="closeSessionModal()">&times;</button>
+            </div>
+            <div id="sessionDetail" class="session-detail"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="/api.js"></script>
     <script src="/app.js"></script>
 </body>

@@ -3,7 +3,7 @@
 import logging
 import re
 from instagrapi import Client
-from db.repositories.settings_repo import settings_repo
+from platforms.settings_compat import settings_repo
 from platforms.instagram.errors import LoginError, APIError, NetworkError
 
 logger = logging.getLogger(__name__)
