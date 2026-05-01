@@ -1,15 +1,19 @@
 import pytest
-from db.database import Database
+from app import create_app
+from app.extensions import db as _db
+
 
 @pytest.fixture
-def test_db():
-    """Create temp test database."""
-    db = Database("sqlite:///:memory:")
-    db.run_migrations()
-    yield db
+def app():
+    application = create_app()
+    application.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+    application.config["TESTING"] = True
+    with application.app_context():
+        _db.create_all()
+        yield application
+        _db.drop_all()
+
 
 @pytest.fixture
-def mock_instagram_adapter():
-    """Mock Instagram adapter for tests."""
-    from platforms.instagram import InstagramAdapter
-    return InstagramAdapter(account_id=999)
+def client(app):
+    return app.test_client()

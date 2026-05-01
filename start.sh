@@ -35,11 +35,6 @@ log "Installing deps…"
 [[ -f "$ROOT/requirements.txt" ]] && pip install -q -r "$ROOT/requirements.txt" 2>/dev/null || true
 ok "Deps OK."
 
-# DB
-log "Running migrations…"
-cd "$ROOT"
-python3 -c "from db.database import Database; db = Database(); db.run_migrations(); print('OK')" 2>&1 | sed 's/^/  /'
-
 # Flask
 log "Starting Flask…"
 python3 main.py 2>&1 &

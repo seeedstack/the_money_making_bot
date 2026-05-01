@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import Mock, patch
-from core.models import FollowStatus, Platform
-from platforms.instagram.adapter import InstagramAdapter
+from app.core.models import FollowStatus, Platform
+from app.adapters.instagram.adapter import InstagramAdapter
 
 
 @pytest.fixture

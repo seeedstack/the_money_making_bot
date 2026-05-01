@@ -2,8 +2,8 @@
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from platforms.twitter.client import TwitterClient
-from platforms.twitter.errors import LoginError, APIError, NetworkError
+from app.adapters.twitter.client import TwitterClient
+from app.adapters.twitter.errors import LoginError, APIError, NetworkError
 
 
 @pytest.fixture

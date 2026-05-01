@@ -1,140 +1,334 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Bot</title>
-    <link rel="stylesheet" href="/styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>theBot — Automation Console</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;475;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" integrity="sha384-mZLF4UVrpi/QTWPA7BjNPEnkIfRFn4ZEO3Qt/HFklTJBj/gBOV8G3HcKn4NfQblz" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>🤖 The Bot</h1>
-            <div class="header-controls">
-                <select id="platformSelect">
-                    <option value="instagram">📷 Instagram</option>
-                    <option value="twitter">𝕏 Twitter</option>
-                    <option value="telegram">📱 Telegram</option>
-                </select>
-                <button onclick="pauseBot()">⏸ Pause</button>
-                <button onclick="resumeBot()">▶️ Resume</button>
-            </div>
-        </header>
 
-        <nav class="tabs">
-            <button class="tab-btn active" data-tab="home">Home</button>
-            <button class="tab-btn" data-tab="platforms">Platforms</button>
-            <button class="tab-btn" data-tab="workflows">Workflows</button>
-            <button class="tab-btn" data-tab="sessions">Sessions</button>
-            <button class="tab-btn" data-tab="checks">Pending Checks</button>
-        </nav>
+<!-- ============== TOP BAR ============== -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-dot">tB</div>
+    <strong>theBot</strong>
+    <small id="versionTag">v1.0 · alpha</small>
+  </div>
 
-        <main class="content">
-            <!-- Home Tab -->
-            <div id="home" class="tab-content active">
-                <h2>Dashboard</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Triggers Matched</h3>
-                        <p class="stat-number" id="triggersCount">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Messages Sent</h3>
-                        <p class="stat-number" id="messagesCount">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Active Sessions</h3>
-                        <p class="stat-number" id="sessionsCount">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Pending Checks</h3>
-                        <p class="stat-number" id="checksCount">0</p>
-                    </div>
-                </div>
+  <div class="topbar-spacer"></div>
 
-                <h3>Recent Sessions</h3>
-                <div id="recentSessions" class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Workflow</th>
-                                <th>State</th>
-                                <th>Started</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recentSessionsBody"></tbody>
-                    </table>
-                </div>
-            </div>
+  <div class="platform-select" id="platformSelect" role="tablist" aria-label="Platform">
+    <!-- populated by JS -->
+  </div>
 
-            <!-- Platforms Tab -->
-            <div id="platforms" class="tab-content">
-                <h2>Platforms</h2>
-                <div id="platformsList" class="platforms-grid"></div>
-            </div>
+  <div id="botStatus" class="bot-status" title="Bot status">
+    <span class="pulse"></span><span id="botStatusLabel">running</span>
+  </div>
 
-            <!-- Workflows Tab -->
-            <div id="workflows" class="tab-content">
-                <h2>Workflows</h2>
-                <button onclick="showCreateWorkflow()" class="btn-primary">+ New Workflow</button>
-                <div id="workflowsList" class="workflows-grid"></div>
-            </div>
+  <button class="icon-btn" id="themeToggle" title="Toggle theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+  </button>
+</header>
 
-            <!-- Sessions Tab -->
-            <div id="sessions" class="tab-content">
-                <h2>Message Sessions</h2>
-                <div class="filter-controls">
-                    <select id="stateFilter">
-                        <option value="">All States</option>
-                        <option value="STEP_RUNNING">Running</option>
-                        <option value="AWAITING_FOLLOW">Awaiting Follow</option>
-                        <option value="COMPLETED">Completed</option>
-                        <option value="FAILED">Failed</option>
-                    </select>
-                    <button onclick="loadSessions()">Refresh</button>
-                </div>
-                <div id="sessionsList" class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Username</th>
-                                <th>Workflow</th>
-                                <th>State</th>
-                                <th>Step</th>
-                                <th>Follow Status</th>
-                                <th>Started</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sessionsBody"></tbody>
-                    </table>
-                </div>
-            </div>
+<!-- ============== SHELL ============== -->
+<div class="shell">
 
-            <!-- Pending Checks Tab -->
-            <div id="checks" class="tab-content">
-                <h2>Pending Follow Checks</h2>
-                <div id="checksList" class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Username</th>
-                                <th>Session</th>
-                                <th>Due At</th>
-                                <th>Attempts</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="checksBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
+  <!-- ----- SIDEBAR ----- -->
+  <aside class="sidebar">
+    <div class="nav-label">Console</div>
+    <button class="tab-btn active" data-tab="home">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 12 3l9 9"/><path d="M5 10v10h14V10"/></svg>
+      Home
+      <span class="count" id="homeFeedCount">0</span>
+    </button>
+    <button class="tab-btn" data-tab="workflows">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17h7"/></svg>
+      Workflows
+      <span class="count" id="workflowCount">—</span>
+    </button>
+    <button class="tab-btn" data-tab="sessions">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+      Sessions
+      <span class="count" id="sessionCount">—</span>
+    </button>
+    <button class="tab-btn" data-tab="platforms">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18"/></svg>
+      Platforms
+    </button>
+    <button class="tab-btn" data-tab="checks" id="checksTabBtn" style="display:none;">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      Pending checks
+      <span class="count" id="checkCount">—</span>
+    </button>
+
+    <div class="sidebar-footer">
+      <div>uptime <span id="uptimeLabel" style="color:var(--text)">—</span></div>
+      <div style="display:flex; gap:10px; align-items:center; margin-top:4px;">
+        <a href="/auth/change-password">Change password</a>
+        <span style="color:var(--border)">·</span>
+        <form method="POST" action="/auth/logout" style="display:inline;">
+          <button type="submit">Sign out</button>
+        </form>
+      </div>
     </div>
+  </aside>
 
-    <script src="/api.js"></script>
-    <script src="/app.js"></script>
+  <!-- ----- MAIN ----- -->
+  <main class="main">
+
+    <!-- ============ HOME ============ -->
+    <section id="home" class="tab-content active">
+      <div class="page-head">
+        <div>
+          <div class="crumbs">console / <span id="crumbPlatform">instagram</span> / overview</div>
+          <h1>Overview</h1>
+          <p>Live activity feed and platform health for the active worker context.</p>
+        </div>
+      </div>
+
+      <div class="stat-row" id="statRow"></div>
+
+      <div class="home-grid">
+        <div class="card">
+          <div class="card-head">
+            <h3>Live activity</h3>
+            <span class="meta"><span class="loader" id="feedLoading"></span> realtime · socket.io</span>
+          </div>
+          <div class="feed" id="feed">
+            <div class="feed-empty">Listening for events…</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <div class="card worker-card">
+            <div class="card-head">
+              <h3>Worker health</h3>
+              <span class="meta" id="workerMeta">—</span>
+            </div>
+            <div id="workerList"></div>
+            <div class="quick-actions">
+              <button class="btn secondary sm" onclick="botAction('pause')">Pause</button>
+              <button class="btn secondary sm" onclick="botAction('resume')">Resume</button>
+              <button class="btn secondary sm" onclick="botAction('restart')">Restart</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Today</h3>
+              <span class="meta" id="todayDate">—</span>
+            </div>
+            <div class="card-pad" style="display:flex; flex-direction:column; gap:14px;">
+              <div style="display:flex; justify-content:space-between; font-size:13px;">
+                <span style="color:var(--text-muted)">Active workflows</span>
+                <span class="mono" id="todayActive">—</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:13px;">
+                <span style="color:var(--text-muted)">Open sessions</span>
+                <span class="mono" id="todayOpen">—</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:13px;">
+                <span style="color:var(--text-muted)">Daily cap</span>
+                <span class="mono" id="todayCap">—</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:13px;">
+                <span style="color:var(--text-muted)">Platform</span>
+                <span class="mono" id="todayPlatform">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WORKFLOWS ============ -->
+    <section id="workflows" class="tab-content">
+      <div class="page-head">
+        <div>
+          <div class="crumbs">console / <span class="crumbPlatformLabel">instagram</span> / workflows</div>
+          <h1>Workflows</h1>
+          <p>Trigger keywords and the step recipes they fire when matched.</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="showCreateWorkflow()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            New workflow
+          </button>
+        </div>
+      </div>
+
+      <div class="workflows-toolbar">
+        <input id="wfSearch" class="search-input" type="text" placeholder="Search by name or trigger keyword…" />
+        <span class="loader" id="workflowsLoading"></span>
+        <span style="color:var(--text-muted); font-family:var(--font-mono); font-size:12px;" id="wfCountLabel"></span>
+      </div>
+
+      <div class="workflow-grid" id="workflowGrid"></div>
+    </section>
+
+    <!-- ============ SESSIONS ============ -->
+    <section id="sessions" class="tab-content">
+      <div class="page-head">
+        <div>
+          <div class="crumbs">console / <span class="crumbPlatformLabel">instagram</span> / sessions</div>
+          <h1>Sessions</h1>
+          <p>Every conversation the engine is tracking, with live state and step trace.</p>
+        </div>
+      </div>
+
+      <div class="sessions-toolbar">
+        <select id="stateFilter" class="select">
+          <option value="">All states</option>
+          <option value="STEP_RUNNING">running</option>
+          <option value="AWAITING_FOLLOW">awaiting_follow</option>
+          <option value="COMPLETED">completed</option>
+          <option value="FAILED">failed</option>
+          <option value="TIMED_OUT">timed_out</option>
+        </select>
+        <span class="loader" id="sessionsLoading"></span>
+        <div style="margin-left:auto; color:var(--text-muted); font-family:var(--font-mono); font-size:12px;" id="sessionTotalLabel"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr>
+            <th style="width:100px">ID</th>
+            <th>User</th>
+            <th>Workflow</th>
+            <th>State</th>
+            <th>Step</th>
+            <th style="width:140px">Started</th>
+          </tr></thead>
+          <tbody id="sessionBody"></tbody>
+        </table>
+        <div class="pager" id="sessionPager"></div>
+      </div>
+    </section>
+
+    <!-- ============ PLATFORMS ============ -->
+    <section id="platforms" class="tab-content">
+      <div class="page-head">
+        <div>
+          <div class="crumbs">console / platforms</div>
+          <h1>Platforms</h1>
+          <p>Toggle workers per surface. Disabled platforms keep their config but stop polling.</p>
+        </div>
+      </div>
+
+      <span class="loader" id="platformsLoading"></span>
+      <div class="platforms-grid" id="platformsGrid"></div>
+    </section>
+
+    <!-- ============ PENDING CHECKS ============ -->
+    <section id="checks" class="tab-content">
+      <div class="page-head">
+        <div>
+          <div class="crumbs">console / <span class="crumbPlatformLabel">instagram</span> / pending checks</div>
+          <h1>Pending checks</h1>
+          <p>Follows we're awaiting confirmation on before continuing the workflow.</p>
+        </div>
+      </div>
+
+      <span class="loader" id="checksLoading"></span>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr>
+            <th style="width:100px">ID</th>
+            <th>User</th>
+            <th>Session</th>
+            <th>Check after</th>
+            <th>Next retry</th>
+            <th>Attempts</th>
+            <th style="width:180px"></th>
+          </tr></thead>
+          <tbody id="checksBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ WORKFLOW MODAL ============ -->
+<div class="modal" id="workflowModal" onclick="if(event.target===this) closeWorkflowModal()">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <div>
+        <h2 id="wfModalTitle">New workflow</h2>
+        <div class="meta" id="wfModalMeta">creating · platform=instagram</div>
+      </div>
+      <button class="modal-x" onclick="closeWorkflowModal()" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="workflowForm" onsubmit="saveWorkflow(event)">
+      <div class="modal-body">
+        <div class="field-row">
+          <div class="field">
+            <label>Name</label>
+            <input type="text" id="wfName" placeholder="e.g. Detox Guide DM" required />
+          </div>
+          <div class="field">
+            <label>Trigger keyword</label>
+            <input type="text" id="wfTrigger" placeholder="e.g. detox" required />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Source ID</label>
+            <input type="text" id="wfSource" placeholder="post id, channel id…" required />
+          </div>
+          <div class="field">
+            <label>Daily cap</label>
+            <input type="number" id="wfCap" placeholder="0 = unlimited" min="0" />
+          </div>
+        </div>
+
+        <div class="section-title">Steps</div>
+        <div class="step-list" id="stepList"></div>
+        <button type="button" class="add-step-btn" onclick="addStep()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Add step
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn danger" id="wfDeleteBtn" onclick="deleteCurrentWorkflow()" style="display:none;">Delete</button>
+        <div style="flex:1"></div>
+        <button type="button" class="btn ghost" onclick="closeWorkflowModal()">Cancel</button>
+        <button type="submit" class="btn">Save workflow</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ SESSION DETAIL MODAL ============ -->
+<div class="modal" id="sessionModal" onclick="if(event.target===this) closeSessionModal()">
+  <div class="modal-box lg">
+    <div class="modal-header">
+      <div>
+        <h2 id="sessionModalTitle">Session</h2>
+        <div class="meta" id="sessionModalMeta">—</div>
+      </div>
+      <button class="modal-x" onclick="closeSessionModal()" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="sessionModalBody">
+      <div class="skeleton" style="height:80px"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/api.js"></script>
+<script src="/app.js"></script>
 </body>
 </html>

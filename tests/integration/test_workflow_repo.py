@@ -1,14 +1,24 @@
 import pytest
-from db.repositories.workflow_repo import WorkflowRepository
+from app.workflows.models import Workflow
+from app.extensions import db
 
-def test_workflow_repo_get_all_returns_empty(test_db):
-    """Stub repo get_all should return []."""
-    repo = WorkflowRepository(test_db.engine)
-    result = repo.get_all("instagram")
-    assert result == []
 
-def test_workflow_repo_insert_returns_none(test_db):
-    """Stub repo insert should return None for now."""
-    repo = WorkflowRepository(test_db.engine)
-    result = repo.insert("instagram", {"name": "test"})
-    assert result is None
+def test_workflow_list_empty(app):
+    with app.app_context():
+        result = Workflow.query.filter_by(platform="instagram", deleted_at=None).all()
+        assert result == []
+
+
+def test_workflow_create(app):
+    with app.app_context():
+        wf = Workflow(
+            platform="instagram",
+            name="Test",
+            trigger_keyword="test",
+            source_id="https://example.com",
+        )
+        db.session.add(wf)
+        db.session.commit()
+        found = Workflow.query.filter_by(name="Test").first()
+        assert found is not None
+        assert found.platform == "instagram"

@@ -3,8 +3,8 @@
 import pytest
 from datetime import datetime
 from unittest.mock import Mock, MagicMock, patch
-from core.models import Platform, FollowStatus, TriggerEvent
-from platforms.instagram.adapter import InstagramAdapter
+from app.core.models import Platform, FollowStatus, TriggerEvent
+from app.adapters.instagram.adapter import InstagramAdapter
 
 
 @pytest.fixture
@@ -71,7 +71,7 @@ class TestInstagramAdapterIntegration:
 
     def test_send_message_propagates_dm_sender_exceptions(self, adapter_with_mock_client):
         """send_message() propagates exceptions from dm_sender."""
-        from platforms.instagram.errors import APIError
+        from app.adapters.instagram.errors import APIError
         adapter_with_mock_client.client.send_dm.side_effect = APIError("Send failed")
 
         with pytest.raises(APIError):
